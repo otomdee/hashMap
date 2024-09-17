@@ -167,3 +167,46 @@ class HashMap {
         oldArray = [];
     }
 }
+
+class setNode {
+    constructor(key = null, nextNode = null) {
+        this.key = key;
+        this.nextNode = nextNode;
+    }
+}
+
+//hashSet class with only keys
+class HashSet {
+    constructor() {
+        this.buckets = [];
+        this.capacity = 16;
+        this.loadFactor = 0.75;
+        this.mapLength = 0;
+    }
+
+    set(key) {
+        const hash = hashFunc(key) % this.capacity;
+        const node = new setNode(key);
+
+        if (!(this.buckets[hash])) {
+            this.buckets[hash] = node;
+            this.mapLength++;
+        }
+        else {
+            //deal with collision
+                let item = this.buckets[hash];
+                do {
+                    if (item.nextNode = null) {
+                        item.nextNode = node;
+                        this.mapLength++;
+                    }
+                    item = item.nextNode;
+                }
+                while(!(item === null));
+        }
+        //check if load factor is reached
+        if (this.mapLength > (this.capacity * this.loadFactor)) {
+            this.resize();
+        }
+    }
+}
