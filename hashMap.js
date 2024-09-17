@@ -1,3 +1,11 @@
+class Node {
+    constructor(key = null, value = null, nextNode = null) {
+        this.key = key;
+        this.value = value;
+        this.nextNode = nextNode;
+    }
+}
+
 function hashFunc(key) {
     let hashCode = 0;
        
@@ -25,24 +33,25 @@ class HashMap {
             this.mapLength++;
         }
         else {
-            if (this.buckets[hash].key === key) {
-                this.buckets[hash].value = value;
-            }
             //deal with collision
-            else {
                 let item = this.buckets[hash];
-                while (!(item.nextNode === null)) {
+                do {
                     if (item.key === key) {
                         item.value = value;
                         break
                     }
+                    else if (item.nextNode === null) {
+                        item.nextNode = node;
+                        this.mapLength++;
+                        break
+                    }
                     item = item.nextNode;
                 }
-                if (item.nextNode === null && (!(item.key === key))) {
-                    item.nextNode = node;
-                    this.mapLength++;
-                }
-            }
+                while(!(item === null));
+        }
+        //check if load factor is reached
+        if (this.mapLength > (this.capacity * this.loadFactor)) {
+            this.resize();
         }
     }
     get(key) {
@@ -136,27 +145,25 @@ class HashMap {
         })
         return entriesArray;
     }
-}
 
-class Node {
-    constructor(key = null, value = null, nextNode = null) {
-        this.key = key;
-        this.value = value;
-        this.nextNode = nextNode;
+    resize() {
+        let newArray = [];
+        this.mapLength = 0;
+        this.capacity = this.capacity * 2;
+        //reference current buckets array
+        let oldArray = this.buckets;
+        //change this.buckets to point to new array
+        this.buckets = newArray;
+        //copy buckets from oldArray into newArray
+        oldArray.forEach((listItem) => {
+            let item = listItem;
+            do {
+                this.set(item.key, item.value);
+                item = item.nextNode;
+            }
+            while(!(item === null))
+        })
+        //free up oldArray
+        oldArray = [];
     }
 }
-
-const test = new HashMap();
-
-test.set('apple', 'red')
-test.set('banana', 'yellow')
-test.set('carrot', 'orange')
-test.set('dog', 'brown')
-test.set('elephant', 'gray')
-test.set('frog', 'green')
-test.set('grape', 'purple')
-test.set('hat', 'black')
-test.set('ice cream', 'white')
-test.set('jacket', 'blue')
-test.set('kite', 'pink')
-test.set('lion', 'golden')
